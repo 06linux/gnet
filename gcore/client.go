@@ -25,6 +25,8 @@ func NewClient() *Client {
 
 func (c *Client) Connect(ip string, port int) {
 
+	gutil.LogInit()
+
 	tcpAddr := &net.TCPAddr{
 		IP:   net.ParseIP(ip),
 		Port: port,
@@ -37,8 +39,6 @@ func (c *Client) Connect(ip string, port int) {
 		return
 	}
 
-	connTcp := NewConnectionTcp(conn)
-	go connTcp.Start()
-
-	gutil.Signal.Waiting()
+	clientConn := NewClientConn(conn)
+	go clientConn.Start()
 }

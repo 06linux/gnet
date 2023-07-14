@@ -19,5 +19,5 @@ func (signalUtil) Waiting() {
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-c
 
-	log.Printf("[signalUtil] Interrupt, signal = %v", sig)
+	log.Println("[Info] Waiting signal =", sig)
 }

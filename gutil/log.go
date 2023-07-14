@@ -1,14 +1,16 @@
 package gutil
 
 import (
-	// "fmt"
+	"fmt"
 	"log"
 	// "os"
 )
 
 type logUtil struct{}
 
-func init() {
+func LogInit() {
+
+	fmt.Println("LogInit ...")
 
 	// file, err := os.OpenFile("./gnet.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	// if err != nil {
@@ -16,6 +18,6 @@ func init() {
 	// 	return
 	// }
 	// log.SetOutput(file)
-	log.SetFlags(log.Llongfile | log.Lmicroseconds | log.Ldate)
-	log.Println("初始化日志配置 ...")
+	// log.SetFlags(log.Llongfile | log.Lmicroseconds | log.Ldate)
+	log.SetFlags(log.Llongfile)
 }

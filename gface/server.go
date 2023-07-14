@@ -4,4 +4,6 @@ type IServer interface {
 	Start()
 	Stop()
 	Restart()
+
+	GetConnMgr() IConnectionManager
 }

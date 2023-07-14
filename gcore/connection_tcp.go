@@ -1,6 +1,7 @@
 package gcore
 
 import (
+	"context"
 	"fmt"
 	"gnet/gface"
 	"log"
@@ -14,7 +15,7 @@ type ConnectionTcp struct {
 	id string
 
 	// 链接套接字
-	netconn net.Conn
+	netConn net.Conn
 
 	// 链接的网络方式
 	network string
@@ -27,13 +28,31 @@ type ConnectionTcp struct {
 
 	// 当前连接的关闭状态
 	isClosed bool
+
+	// 告知该链接已经退出
+	ctx    context.Context
+	cancel context.CancelFunc
+
+	// 链接管理器
+	connMgr gface.IConnectionManager
 }
 
-func NewConnectionTcp(netConn net.Conn) *ConnectionTcp {
+func NewServerConn(server gface.IServer, netConn net.Conn) gface.IConnection {
 
 	return &ConnectionTcp{
-		id:         "test111",
-		netconn:    netConn,
+		id:         "server111",
+		netConn:    netConn,
+		network:    netConn.LocalAddr().Network(),
+		loaclAddr:  netConn.LocalAddr().String(),
+		remoteAddr: netConn.RemoteAddr().String(),
+		connMgr:    server.GetConnMgr(),
+	}
+}
+
+func NewClientConn(netConn net.Conn) gface.IConnection {
+	return &ConnectionTcp{
+		id:         "client111",
+		netConn:    netConn,
 		network:    netConn.LocalAddr().Network(),
 		loaclAddr:  netConn.LocalAddr().String(),
 		remoteAddr: netConn.RemoteAddr().String(),
@@ -49,48 +68,87 @@ func (c *ConnectionTcp) IsClosed() bool {
 }
 
 func (c *ConnectionTcp) Start() {
+	defer log.Println("[Info] Start() exit! id =", c.id)
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println("[Error] Start() recover", err)
+		}
+	}()
+
+	log.Println("[Info] Start() start id =", c.id)
+	c.ctx, c.cancel = context.WithCancel(context.Background())
 
 	go c.StartReader()
 	go c.StartWriter()
 
+	select {
+	case <-c.ctx.Done(): // 链接已经断开
+		c.destory()
+		return
+	}
 }
 
 // 读消息Goroutine，用于从客户端中读取数据
 func (c *ConnectionTcp) StartReader() {
+	defer log.Println("[Info] StartReader() exit id =", c.id)
+	defer c.Stop()
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println("[Error] StartReader() recover ", err)
+		}
+	}()
 
 	for {
-
 		buffer := make([]byte, 1024)
 
 		// 链接中读取数据
-		_, err := c.netconn.Read(buffer)
+		_, err := c.netConn.Read(buffer)
 		if err != nil {
-			log.Println("Error! ConnectionTcp StartReader", err)
+			log.Println("[Error] StartReader() read socket ", err)
 			return
 		}
 
 		fmt.Println("收到", c.remoteAddr, "发送的数据:", string(buffer))
 	}
-
 }
 
-// 写消息Goroutine， 用户将数据发送给客户端
+// 写消息 Goroutine， 用户将数据发送给客户端
 func (c *ConnectionTcp) StartWriter() {
+	defer log.Println("[Info] StartWriter() exit id =", c.id)
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println("[Error] StartWriter() recover ", err)
+		}
+	}()
+
 	for {
 
-		time.Sleep(1 * time.Second)
-
-		msg := "hell world"
-		_, err := c.netconn.Write([]byte(msg))
-		if err != nil {
-			log.Println("Error! ConnectionTcp StartWriter", err)
+		select {
+		case <-c.ctx.Done():
 			return
+		default:
+
+			time.Sleep(1 * time.Second)
+
+			if c.isClosed == true {
+				return
+			}
+
+			msg := "hell world 你好！！"
+			_, err := c.netConn.Write([]byte(msg))
+			if err != nil {
+				log.Println("[Error] StartReader() write socket ", err)
+				return
+			}
+
 		}
+
 	}
 }
 
+// 停止连接，结束当前连接状态
 func (c *ConnectionTcp) Stop() {
-
+	c.cancel()
 }
 
 func (c *ConnectionTcp) Write(msg gface.IMessage) error {
@@ -100,4 +158,24 @@ func (c *ConnectionTcp) Write(msg gface.IMessage) error {
 
 func (c *ConnectionTcp) Read() {
 
+}
+
+// 销毁链接数据
+func (c *ConnectionTcp) destory() {
+
+	if c.isClosed == true {
+		return
+	}
+
+	log.Println("[Info] destory() id =", c.id)
+
+	// 关闭网络连接
+	c.netConn.Close()
+
+	// 从管理器中删除
+	if c.connMgr != nil {
+		c.connMgr.Remove(c)
+	}
+
+	c.isClosed = true
 }

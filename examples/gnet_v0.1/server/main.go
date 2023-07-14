@@ -2,6 +2,7 @@ package main
 
 import (
 	"gnet/gcore"
+	"gnet/gutil"
 )
 
 func main() {
@@ -9,5 +10,6 @@ func main() {
 	server := gcore.NewServer()
 	server.Start()
 
+	gutil.Signal.Waiting()
 	// gutil.Time.GetTime()
 }
