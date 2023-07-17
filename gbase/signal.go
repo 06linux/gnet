@@ -1,4 +1,4 @@
-package gutil
+package gbase
 
 import (
 	"log"
@@ -7,10 +7,10 @@ import (
 	"syscall"
 )
 
-type signalUtil struct{}
+type baseGignal struct{}
 
 // 阻塞，直到收到 ctrl+c kill 信号则返回
-func (signalUtil) Waiting() {
+func (baseGignal) Waiting() {
 
 	// 阻塞,否则主Go退出， listenner的go将会退出
 	c := make(chan os.Signal, 1)

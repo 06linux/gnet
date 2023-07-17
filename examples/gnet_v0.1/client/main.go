@@ -1,8 +1,8 @@
 package main
 
 import (
+	"gnet/gbase"
 	"gnet/gcore"
-	"gnet/gutil"
 )
 
 func main() {
@@ -10,5 +10,5 @@ func main() {
 	client := gcore.NewClient()
 	client.Connect("127.0.0.1", 8000)
 
-	gutil.Signal.Waiting()
+	gbase.Signal.Waiting()
 }

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"gnet/gbase"
 	"gnet/gcore"
-	"gnet/gutil"
 )
 
 func main() {
@@ -10,6 +10,6 @@ func main() {
 	server := gcore.NewServer()
 	server.Start()
 
-	gutil.Signal.Waiting()
-	// gutil.Time.GetTime()
+	gbase.Signal.Waiting()
+	// gbase.Time.GetTime()
 }

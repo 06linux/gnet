@@ -12,7 +12,7 @@ type ServerConfig struct {
 	// 主机地址（格式： 127.0.0.1:8000)
 	addr string
 
-	// 限制最大链接数量
+	// 限制最大连接数量
 	maxConn int
 
 	// woker最大数量（每一个 worker 对应一个 Goroutine)

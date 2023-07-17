@@ -2,8 +2,8 @@ package gcore
 
 import (
 	"fmt"
-	"gnet/gface"
-	"gnet/gutil"
+	"gnet/gbase"
+	"gnet/iface"
 	"net"
 )
 
@@ -12,7 +12,7 @@ type Client struct {
 	ver  string
 
 	network string
-	conn    gface.IConnection
+	conn    iface.IConnection
 }
 
 func NewClient() *Client {
@@ -25,7 +25,7 @@ func NewClient() *Client {
 
 func (c *Client) Connect(ip string, port int) {
 
-	gutil.LogInit()
+	gbase.Log.Init()
 
 	tcpAddr := &net.TCPAddr{
 		IP:   net.ParseIP(ip),
@@ -35,7 +35,7 @@ func (c *Client) Connect(ip string, port int) {
 
 	conn, err := net.DialTCP(c.network, nil, tcpAddr)
 	if err != nil {
-		fmt.Printf("[Client %s] 链接错误, %v", c.ver, err)
+		fmt.Printf("[Client %s] 连接错误, %v", c.ver, err)
 		return
 	}
 

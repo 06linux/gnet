@@ -1,4 +1,4 @@
-package gface
+package iface
 
 type IMessage interface {
 	Pack() ([]byte, error)     // 封包方法

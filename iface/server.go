@@ -1,9 +1,9 @@
-package gface
+package iface
 
 type IServer interface {
 	Start()
 	Stop()
 	Restart()
 
-	GetConnMgr() IConnectionManager
+	GetConnMgr() IConnectionMgr
 }

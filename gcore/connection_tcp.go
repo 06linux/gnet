@@ -3,7 +3,7 @@ package gcore
 import (
 	"context"
 	"fmt"
-	"gnet/gface"
+	"gnet/iface"
 	"log"
 	"net"
 	"time"
@@ -11,13 +11,13 @@ import (
 
 type ConnectionTcp struct {
 
-	// 连接 id (唯一标识，每一个链接都分配一个唯一标识)
+	// 连接 id (唯一标识，每一个连接都分配一个唯一标识)
 	id string
 
-	// 链接套接字
+	// 连接套接字
 	netConn net.Conn
 
-	// 链接的网络方式
+	// 连接的网络方式
 	network string
 
 	// 本机地址
@@ -29,15 +29,15 @@ type ConnectionTcp struct {
 	// 当前连接的关闭状态
 	isClosed bool
 
-	// 告知该链接已经退出
+	// 告知该连接已经退出
 	ctx    context.Context
 	cancel context.CancelFunc
 
-	// 链接管理器
-	connMgr gface.IConnectionManager
+	// 连接管理器
+	connMgr iface.IConnectionMgr
 }
 
-func NewServerConn(server gface.IServer, netConn net.Conn) gface.IConnection {
+func NewServerConn(server iface.IServer, netConn net.Conn) iface.IConnection {
 
 	return &ConnectionTcp{
 		id:         "server111",
@@ -49,7 +49,7 @@ func NewServerConn(server gface.IServer, netConn net.Conn) gface.IConnection {
 	}
 }
 
-func NewClientConn(netConn net.Conn) gface.IConnection {
+func NewClientConn(netConn net.Conn) iface.IConnection {
 	return &ConnectionTcp{
 		id:         "client111",
 		netConn:    netConn,
@@ -82,7 +82,7 @@ func (c *ConnectionTcp) Start() {
 	go c.StartWriter()
 
 	select {
-	case <-c.ctx.Done(): // 链接已经断开
+	case <-c.ctx.Done(): // 连接已经断开
 		c.destory()
 		return
 	}
@@ -101,7 +101,7 @@ func (c *ConnectionTcp) StartReader() {
 	for {
 		buffer := make([]byte, 1024)
 
-		// 链接中读取数据
+		// 连接中读取数据
 		_, err := c.netConn.Read(buffer)
 		if err != nil {
 			log.Println("[Error] StartReader() read socket ", err)
@@ -151,7 +151,7 @@ func (c *ConnectionTcp) Stop() {
 	c.cancel()
 }
 
-func (c *ConnectionTcp) Write(msg gface.IMessage) error {
+func (c *ConnectionTcp) Write(msg iface.IMessage) error {
 
 	return nil
 }
@@ -160,7 +160,7 @@ func (c *ConnectionTcp) Read() {
 
 }
 
-// 销毁链接数据
+// 销毁连接数据
 func (c *ConnectionTcp) destory() {
 
 	if c.isClosed == true {

@@ -1,18 +1,19 @@
 package gcore
 
 import (
-	"gnet/gface"
-	"gnet/gutil"
+	"gnet/gbase"
+	"gnet/iface"
 	"log"
 	"net"
 )
 
 type Server struct {
+
 	// 服务器配置
 	config *Config
 
-	// 链接管理器
-	connMgr *ConnectionManager
+	// 连接管理器
+	connMgr *ConnectionMgr
 
 	// 房间管理器
 	roomMgr map[string]any
@@ -21,18 +22,18 @@ type Server struct {
 func NewServer() *Server {
 	return &Server{
 		config:  NewConfig(),
-		connMgr: NewConnectionManager(),
+		connMgr: NewConnectionMgr(),
 	}
 }
 
 func (s *Server) Start() {
 
-	gutil.LogInit()
+	gbase.Log.Init()
 	log.Println("[Server] Start ")
 
 	// 初始化配置
 
-	// 链接监听
+	// 连接监听
 	s.listenTcp()
 }
 
@@ -44,11 +45,11 @@ func (s *Server) Restart() {
 
 }
 
-func (s *Server) GetConnMgr() gface.IConnectionManager {
+func (s *Server) GetConnMgr() iface.IConnectionMgr {
 	return s.connMgr
 }
 
-// 监听客户端链接
+// 监听客户端连接
 func (s *Server) listenTcp() {
 
 	// 获取 tcp 地址
@@ -77,7 +78,7 @@ func (s *Server) listenTcp() {
 				log.Println("[Error] listenTcp()  Accept ", err)
 			}
 
-			// 创建链接对象
+			// 创建连接对象
 			serverConn := NewServerConn(s, conn)
 
 			// 开启一个 goroutine
@@ -88,8 +89,8 @@ func (s *Server) listenTcp() {
 
 }
 
-// 开启一个链接
-func (s *Server) startConn(conn gface.IConnection) {
+// 开启一个连接
+func (s *Server) startConn(conn iface.IConnection) {
 
 	log.Println("[Info] startConn()  ")
 

@@ -1,4 +1,4 @@
-package gutil
+package gbase
 
 import (
 	"fmt"
@@ -6,9 +6,9 @@ import (
 	// "os"
 )
 
-type logUtil struct{}
+type baseLog struct{}
 
-func LogInit() {
+func (baseLog) Init() {
 
 	fmt.Println("LogInit ...")
 
