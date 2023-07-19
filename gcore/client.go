@@ -42,3 +42,7 @@ func (c *Client) Connect(ip string, port int) {
 	clientConn := NewClientConn(conn)
 	go clientConn.Start()
 }
+
+func (c *Client) Close() {
+
+}

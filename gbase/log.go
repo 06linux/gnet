@@ -8,6 +8,8 @@ import (
 
 type baseLog struct{}
 
+var Log = &baseLog{}
+
 func (baseLog) Init() {
 
 	fmt.Println("LogInit ...")

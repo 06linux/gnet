@@ -7,10 +7,12 @@ import (
 	"syscall"
 )
 
-type baseGignal struct{}
+type baseSignal struct{}
+
+var Signal = &baseSignal{}
 
 // 阻塞，直到收到 ctrl+c kill 信号则返回
-func (baseGignal) Waiting() {
+func (baseSignal) Waiting() {
 
 	// 阻塞,否则主Go退出， listenner的go将会退出
 	c := make(chan os.Signal, 1)

@@ -1,6 +1,6 @@
 package iface
 
 type IMessage interface {
-	Pack() ([]byte, error)     // 封包方法
-	Unpack() (IMessage, error) //拆包
+	Pack() ([]byte, error) // 封包
+	Unpack([]byte) error   // 拆包
 }
